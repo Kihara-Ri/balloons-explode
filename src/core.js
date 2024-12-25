@@ -31,7 +31,6 @@ function createBalloons(world, balloonCount) {
 // 为每个气球添加轻微的扰动
 function applyRandomForces(balloons, forceMagnitude = 0.0005) {
   balloons.forEach((balloon) => {
-    const forceMagnitude = 0.0005;
     Body.applyForce(balloon.body, balloon.body.position, {
       x: (Math.random() - 0.5) * forceMagnitude,
       y: (Math.random() - 0.5) * forceMagnitude,

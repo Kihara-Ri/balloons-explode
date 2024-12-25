@@ -15,7 +15,7 @@ class Balloon {
       render: {
         fillStyle: color,
         strokeStyle: 'black',
-        lineWidth: 3,
+        lineWidth: 0,
       },
     });
     this.world = null; // 存储当前世界的引用
@@ -42,9 +42,16 @@ class Balloon {
   // 更新气球 DOM 元素的位置
   updatePosition () {
     if (!this.body) return;
+    // 获取 Matter.js 中气球的位置
     const {x, y} = this.body.position;
-    this.element.style.left = `${x}px`;
-    this.element.style.top = `${y}px`;
+    // 获取容器的偏移量
+    const container = document.body.querySelector('.main-container');
+    const containerRect = container.getBoundingClientRect();
+
+    // 修正 DOM 元素的位置, 使其与 Matter.js 坐标同步
+    this.element.style.left = `${containerRect.left + x}px`;
+    this.element.style.top = `${containerRect.top + y}px`;
+    this.element.style.transform = `translate(-50%, -50%) rotate(${this.body.angle}rad)`;
   }
 
   async explode (forceMagnitude = 5, radius = 400) {
