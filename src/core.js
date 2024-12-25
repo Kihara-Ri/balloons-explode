@@ -14,7 +14,7 @@ function createBoundaries (world, width = 800, height = 600) {
 }
 
 // 创建多个气球实例
-function createBalloons(world, balloonCount) {
+function createBalloons(world, balloonCount = 20, onExplodeCallback) {
   const balloons = [];
   for (let i = 0; i < balloonCount; i++) {
     const x = Math.random() * 800;
@@ -23,14 +23,19 @@ function createBalloons(world, balloonCount) {
     const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`; // 随机颜色
     const balloon = new Balloon(x, y, radius, color);
 
-    balloon.add(world);
+    balloon.add(world, ".main-container");
     balloons.push(balloon);
+
+    // 监听气球爆炸事件
+    balloon.onExplode(() => {
+      onExplodeCallback(balloon);
+    })
   }
   return balloons;
 }
 
 // 为每个气球添加轻微的扰动
-function applyRandomForces(balloons, forceMagnitude = 0.0005) {
+function applyRandomForces(balloons, forceMagnitude = 0.001) {
   balloons.forEach((balloon) => {
     Body.applyForce(balloon.body, balloon.body.position, {
       x: (Math.random() - 0.5) * forceMagnitude,
@@ -41,7 +46,8 @@ function applyRandomForces(balloons, forceMagnitude = 0.0005) {
 
 // 初始化物理引擎和渲染器
 function setupEngineAndRender(selector = '.main-container', width = 800, height = 600) {
-  if (!document.body.querySelector(selector) == null) return console.error(`渲染器挂载失败: 没有找到 selector: ${selector}`);
+  if (!document.body.querySelector(selector) == null) 
+  return console.error(`渲染器挂载失败: 没有找到 selector: ${selector}`);
   const engine = Engine.create();
   const render = Render.create({
     element: document.body.querySelector(selector),
@@ -98,17 +104,26 @@ function setupToggle(engine, balloons) {
 function main() {
   // 初始化物理引擎和渲染器
   const { engine, render } = setupEngineAndRender();
-  const world = engine.world
+  const world = engine.world;
   // 创建物理世界边界
   const { ground, ceiling, leftWall, rightWall } = createBoundaries(world);
 
   // 创建气球
-  const balloons = createBalloons(world, 10);
+  let remainingBalloons = 20;
+  const balloons = createBalloons(world, remainingBalloons, (explodedBalloon) => {
+    remainingBalloons--;
+    console.log(`剩余气球: ${remainingBalloons}`);
+    if (remainingBalloons === 0) {
+      console.log("气球全部爆炸💥💥💥");
+    }
+  });
   // 启动引擎和渲染器
   Render.run(render);
   const runner = Runner.create();
   Runner.run(runner, engine);
+  //==========================================================================================
   //=========================================== 运行中 ========================================
+  //==========================================================================================
   // 为每帧添加随机力
   Events.on(engine, "beforeUpdate", () => {
     applyRandomForces(balloons);
