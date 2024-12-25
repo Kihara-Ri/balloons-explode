@@ -6,6 +6,7 @@ document.querySelector('#app').innerHTML = `
     <h1>Canvas matter-js</h1>
     <div class="main-container"></div>
     <button id="toggle-gravity">启用重力</button>
+    <div class="second-container"></vid>
   </div>
 `;
 main();

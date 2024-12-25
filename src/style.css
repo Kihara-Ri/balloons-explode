@@ -19,6 +19,7 @@ body {
   align-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow-y: auto;
 }
 
 .root {
@@ -35,4 +36,12 @@ body {
   height: 600px;
   background-color: #aaaaaa;
   border-radius: 12px;
+}
+
+.second-container {
+  width: 800px;
+  height: 800px;
+  background-color: #7c7c7c;
+  border-radius: 12px;
+  margin: 20px;
 }

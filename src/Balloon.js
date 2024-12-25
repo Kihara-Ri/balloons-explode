@@ -10,7 +10,7 @@ class Balloon {
   constructor(x, y, radius, color = 'red') {
     this.body = Bodies.circle(x, y, radius, {
       friction: 0.02,
-      frictionAir: 0.01, // 空气阻力
+      frictionAir: 0.03, // 空气阻力
       restitution: 0.8, // 弹性
       render: {
         fillStyle: color,
@@ -42,15 +42,19 @@ class Balloon {
   // 更新气球 DOM 元素的位置
   updatePosition () {
     if (!this.body) return;
+
     // 获取 Matter.js 中气球的位置
     const {x, y} = this.body.position;
-    // 获取容器的偏移量
+    // 获取容器的绝对位置偏移量
     const container = document.body.querySelector('.main-container');
     const containerRect = container.getBoundingClientRect();
 
-    // 修正 DOM 元素的位置, 使其与 Matter.js 坐标同步
-    this.element.style.left = `${containerRect.left + x}px`;
-    this.element.style.top = `${containerRect.top + y}px`;
+    // 修正 DOM 元素的位置, 加入页面滚动偏移量
+    const absoluteLeft = containerRect.left + window.scrollX;
+    const absoluteTop = containerRect.top + window.scrollY;
+
+    this.element.style.left = `${absoluteLeft + x}px`;
+    this.element.style.top = `${absoluteTop + y}px`;
     this.element.style.transform = `translate(-50%, -50%) rotate(${this.body.angle}rad)`;
   }
 
