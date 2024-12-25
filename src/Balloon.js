@@ -19,17 +19,41 @@ class Balloon {
       },
     });
     this.world = null; // 存储当前世界的引用
+    this.isExploded = false; // 标记气球是否已经爆炸
+
+    // 创建 DOM 元素
+    this.element = document.createElement("div");
+    this.element.style.width = `${radius * 2}px`;
+    this.element.style.height = `${radius * 2}px`;
+    this.element.style.backgroundColor = color;
+    this.element.style.borderRadius = "50%";
+    this.element.style.position = "absolute";
+    this.element.style.transform = "translate(-50%, -50%)";
+    document.body.querySelector(".main-container").appendChild(this.element);
+
+    // 添加点击事件
+    this.element.addEventListener("click", () => this.explode());
   }
   add (world) {
     this.world = world;
     Composite.add(world, this.body);
   };
 
+  // 更新气球 DOM 元素的位置
+  updatePosition () {
+    if (!this.body) return;
+    const {x, y} = this.body.position;
+    this.element.style.left = `${x}px`;
+    this.element.style.top = `${y}px`;
+  }
+
   async explode (forceMagnitude = 5, radius = 400) {
     if (!this.world) {
       console.error("气球尚未被添加到物理世界中, 无法爆炸");
       return null;
     }
+    if (this.isExploded) return; // 如果已经爆炸
+    this.isExploded = true;
 
     // 模拟膨胀
     for (let scale = 1; scale <= 1.2; scale += 0.05) {
@@ -73,6 +97,8 @@ class Balloon {
     })
     // 从物理世界中移除气球
     Composite.remove(this.world, this.body);
+    // 移除DOM元素
+    this.element.remove();
     console.log("气球爆炸了💥")
   };
 
